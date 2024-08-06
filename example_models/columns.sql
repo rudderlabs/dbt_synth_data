@@ -27,6 +27,7 @@ with
 {{ synth_column_string(name="column_string", min_length=10, max_length=20) }}
 {{ synth_column_date(name="column_date", min='1938-01-01', max='1994-12-31') }}
 {{ synth_column_date_sequence(name="column_dateseq", start_date='2020-08-10', step=3)}}
+{{ synth_column_timestamp(name="column_timestamp", min='1938-01-01 00:00:00', max='1994-12-31 23:59:59') }}
 {{ synth_column_value(name="column_value", value='Yes') }}
 {{ synth_column_values(name="column_values",
     values=['Mathematics', 'Science', 'English Language Arts', 'Social Studies'],

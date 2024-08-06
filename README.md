@@ -800,6 +800,11 @@ Generates a spoken language (name or 2- or 3-letter code), selected from the `sy
 The optional `type` (which defaults to `name`) can take values `name` (the full English name of the language, e.g. *Spanish*), `code2` (the ISO 693-2 two-letter code for the langage, e.g. `es`), or `code3` (the ISO 693-3 three-letter code for the language, e.g. `spa`).
 </details>
 
+<details>
+<summary><code>email domains</code></summary>
+
+Generates email domains e.g. `gmail.com`
+</details>
 
 ## Composite column types
 Composite column types put together several other column types into a more complex data type.

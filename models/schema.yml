@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: tracks
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+      - name: created_on
+        tests:
+          - not_null
