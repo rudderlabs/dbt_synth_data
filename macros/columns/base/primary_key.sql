@@ -11,7 +11,7 @@
 {%- endmacro %}
 
 {% macro default__synth_column_primary_key() -%}
-    MD5( '{{this}}' || __row_number::varchar )
+    MD5( __row_number::varchar )
 {%- endmacro %}
 
 {% macro sqlite__synth_column_primary_key() %}
