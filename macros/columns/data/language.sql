@@ -9,7 +9,7 @@
         value_cols=type,
         distribution=distribution,
         weight_col=weight_col,
-        filter=filter,
+        filter=filter
     ) }}
     {{ return("") }}
 {%- endmacro %}
