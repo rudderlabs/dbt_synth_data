@@ -1,19 +1,19 @@
-{% macro synth_column_select(name, model_name, value_cols=[], distribution="uniform", weight_col="", filter="", do_ref=True) -%}
+{% macro synth_column_select(name, model_name, value_cols=[], distribution="uniform", weight_col="", filter="", do_ref=True, null_frac=0) -%}
     {# Allow for `value_cols` to be a single (string) column name: #}
     {% if value_cols is string %}{% set value_cols = [value_cols] %}{% endif %}
     
     {% if distribution=='uniform' %}
-        {{ dbt_synth_data.synth_column_select_uniform(name, model_name, value_cols, filter, do_ref) }}
+        {{ dbt_synth_data.synth_column_select_uniform(name, model_name, value_cols, filter, do_ref, null_frac) }}
     
     {% elif distribution=='weighted' %}
-        {{ dbt_synth_data.synth_column_select_weighted(name, model_name, value_cols, weight_col, filter, do_ref) }}
+        {{ dbt_synth_data.synth_column_select_weighted(name, model_name, value_cols, weight_col, filter, do_ref, null_frac) }}
     
     {% else %}
         {{ exceptions.raise_compiler_error("Invalid `distribution` " ~ distribution ~ " for select column `" ~ name ~ "`: should be `uniform` (default) or `weighted`.") }}
     {% endif %}
 {%- endmacro %}
 
-{% macro synth_column_select_uniform(name, model_name, value_cols, filter, do_ref) %}
+{% macro synth_column_select_uniform(name, model_name, value_cols, filter, do_ref, null_frac) %}
     {% set table_name = dbt_synth_data.synth_retrieve('synth_conf')['table_name'] or "synth_table" %}
     {% set cte %}
         {# {{table_name}}__{{name}}__cte as ( #}
@@ -51,8 +51,8 @@
         left join {{table_name}}__{{name}}__cte on ___PREVIOUS_CTE___.{{name}}__rand between {{table_name}}__{{name}}__cte.from_val and {{table_name}}__{{name}}__cte.to_val
     {% endset %}
     {{ dbt_synth_data.synth_store("joins", name+"__cte", {"fields": join_fields, "clause": join_clause} ) }}
-    
-    {% set final_field %}
+
+    {% set uniform_field %}
         {% if value_cols|length==1 %}
             {{name}}
         {% else %}
@@ -62,10 +62,21 @@
             {% endfor %}
         {% endif %}
     {% endset %}
+
+    {% set final_field %}
+        (
+        CASE
+            WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
+            THEN NULL
+            ELSE {{ uniform_field }}
+        END
+        ) as {{ name }}
+    {% endset %}
+
     {{ dbt_synth_data.synth_store("final_fields", name, final_field) }}
 {% endmacro %}
 
-{% macro synth_column_select_weighted(name, model_name, value_cols, weight_col, filter, do_ref) %}
+{% macro synth_column_select_weighted(name, model_name, value_cols, weight_col, filter, do_ref, null_frac) %}
     {% set table_name = dbt_synth_data.synth_retrieve('synth_conf')['table_name'] or "synth_table" %}
     {% if not weight_col %}
         {{ exceptions.raise_compiler_error("`weight_col` is required when `distribution` for select column `" ~ name ~ "` is `weighted`.") }}
@@ -109,7 +120,7 @@
     {% endset %}
     {{ dbt_synth_data.synth_store("joins", name+"__cte", {"fields": join_fields, "clause": join_clause} ) }}
     
-    {% set final_field %}
+    {% set weighted_field %}
         {% if value_cols|length==1 %}
             {{name}}
         {% else %}
@@ -119,5 +130,16 @@
             {% endfor %}
         {% endif %}
     {% endset %}
+
+    {% set final_field %}
+        (
+        CASE
+            WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
+            THEN NULL
+            ELSE {{ weighted_field }}
+        END
+        ) as {{ name }}
+    {% endset %}
+
     {{ dbt_synth_data.synth_store("final_fields", name, final_field) }}
 {% endmacro %}
