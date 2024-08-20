@@ -9,3 +9,4 @@ env/
 test.env
 __pycache__
 .DS_Store
+models/test*.sql
