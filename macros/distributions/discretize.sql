@@ -14,7 +14,7 @@
     cast(floor( {{distribution}} ) as int)
 {% endmacro %}
 
-{% macro postgres__synth_distribution_discretize_floor(distribution) %}
+{% macro redshift__synth_distribution_discretize_floor(distribution) %}
     floor( {{distribution}} )
 {% endmacro %}
 
@@ -40,7 +40,7 @@
     cast(ceil( {{distribution}} ) as int)
 {% endmacro %}
 
-{% macro postgres__synth_distribution_discretize_ceil(distribution) %}
+{% macro redshift__synth_distribution_discretize_ceil(distribution) %}
     ceil( {{distribution}} )
 {% endmacro %}
 
@@ -66,7 +66,7 @@
     round( ( {{distribution}} ) , {{precision}})
 {% endmacro %}
 
-{% macro postgres__synth_distribution_discretize_round(distribution, precision) %}
+{% macro redshift__synth_distribution_discretize_round(distribution, precision) %}
     round( ( {{distribution}} )::numeric , {{precision}})
 {% endmacro %}
 

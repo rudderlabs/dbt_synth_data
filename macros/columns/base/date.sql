@@ -25,26 +25,24 @@
     date '{{min}}' + ROUND(RANDOM() * ({% if max|length > 0 %}date '{{max}}'{% else %}CURRENT_DATE{% endif %} - date '{{min}}'))::int
 {% endmacro %}
 
-{% macro postgres__synth_column_date_base(min, max, distribution, null_frac) %}
-    date '{{min}}' + ROUND(RANDOM() * ({% if max|length > 0 %}date '{{max}}'{% else %}CURRENT_DATE{% endif %} - date '{{min}}'))::int
-{% endmacro %}
-
-{% macro snowflake__synth_column_date_base(min, max, distribution, null_frac) %}
+{% macro redshift__synth_column_date_base(min, max, distribution, null_frac) %}
     {% set date_field %}
-        dateadd(
-            day,
-            UNIFORM(
-                0,
-                datediff(day, '{{min}}'::date, '{{max}}'::date),
-                RANDOM( {{ dbt_synth_data.synth_get_randseed() }} )),
-            '{{min}}'::date
-        )
+        date '{{min}}' + ROUND(RANDOM() * ({% if max|length > 0 %}date '{{max}}'{% else %}CURRENT_DATE{% endif %} - date '{{min}}'))::int
     {% endset %}
-
     CASE
         WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
         THEN NULL
         ELSE {{ date_field }}
     END
+{% endmacro %}
 
+{% macro snowflake__synth_column_date_base(min, max, distribution, null_frac) %}
+    {% set date_field %}
+        dateadd(day, UNIFORM(0, datediff(day, '{{min}}'::date, '{{max}}'::date), RANDOM( {{ dbt_synth_data.synth_get_randseed() }} )), '{{min}}'::date)
+    {% endset %}
+    CASE
+        WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
+        THEN NULL
+        ELSE {{ date_field }}
+    END
 {% endmacro%}

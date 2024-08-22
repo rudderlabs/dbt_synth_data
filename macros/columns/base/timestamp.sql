@@ -14,9 +14,16 @@
     {# NOT YET IMPLEMENTED #}
 {%- endmacro %}
 
-{% macro postgres__synth_column_timestamp_base(min, max, distribution, null_frac) %}
-    date '{{min}}' + ROUND(RANDOM() * ({% if max|length > 0 %}date '{{max}}'{% else %}CURRENT_DATE{% endif %} - date '{{min}}'))::int
-{% endmacro %}
+{% macro redshift__synth_column_timestamp_base(min, max, distribution, null_frac) %}
+    {% set date_field %}
+        '{{min}}'::timestamp + (DATEDIFF(milliseconds, '{{min}}'::timestamp, '{{max}}'::timestamp) * RANDOM())/1000 * interval '1 second'
+    {% endset %}
+    CASE
+        WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
+        THEN NULL
+        ELSE {{ date_field }}
+    END
+{% endmacro%}
 
 {% macro snowflake__synth_column_timestamp_base(min, max, distribution, null_frac) %}
     {% set date_field %}

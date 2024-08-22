@@ -78,6 +78,9 @@
 
 {% macro synth_column_select_weighted(name, model_name, value_cols, weight_col, filter, do_ref, null_frac) %}
     {% set table_name = dbt_synth_data.synth_retrieve('synth_conf')['table_name'] or "synth_table" %}
+    {%- set frame_clause -%}
+        {%- if target.type == "redshift" -%}rows between unbounded preceding and current row{%- endif -%}
+    {%- endset -%}
     {% if not weight_col %}
         {{ exceptions.raise_compiler_error("`weight_col` is required when `distribution` for select column `" ~ name ~ "` is `weighted`.") }}
     {% endif %}
@@ -89,8 +92,8 @@
                 {{value_col}},
                 {% endfor %}
                 {{weight_col}},
-                ( sum({{weight_col}}) over (order by {{weight_col}} desc, {{value_cols[0]}} asc) - {{weight_col}}) / sum({{weight_col}}) over () as from_val,
-                ( sum({{weight_col}}) over (order by {{weight_col}} desc, {{value_cols[0]}} asc)                 ) / sum({{weight_col}}) over () as to_val
+                ( sum({{weight_col}}) over (order by {{weight_col}} desc, {{value_cols[0]}} asc {{ frame_clause }}) - {{weight_col}}) / sum({{weight_col}}) over () as from_val,
+                ( sum({{weight_col}}) over (order by {{weight_col}} desc, {{value_cols[0]}} asc {{ frame_clause }})                 ) / sum({{weight_col}}) over () as to_val
             from {% if do_ref %}{{ref(model_name)}}{% else %}{{model_name}}{% endif %}
             {% if filter|trim|length %}
             where {{filter}}

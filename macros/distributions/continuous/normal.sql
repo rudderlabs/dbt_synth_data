@@ -16,7 +16,7 @@
     ( ( {{stddev}}::float * sqrt(-2*log(random()))*sin(2*pi()*random()) ) + {{mean}}::float )
 {% endmacro %}
 
-{% macro postgres__synth_distribution_continuous_normal(mean, stddev) %}
+{% macro redshift__synth_distribution_continuous_normal(mean, stddev) %}
     {#- formula below is based on https://mathworld.wolfram.com/Box-MullerTransformation.html -#}
     ( ( {{stddev}}::float * sqrt(-2*log(random()))*sin(2*pi()*random()) ) + {{mean}}::float )
 {% endmacro %}

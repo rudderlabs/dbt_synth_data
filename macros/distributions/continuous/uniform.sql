@@ -14,7 +14,7 @@
     (random() * ({{max}}-{{min}}) + {{min}})
 {% endmacro %}
 
-{% macro postgres__synth_distribution_continuous_uniform(min, max) %}
+{% macro redshift__synth_distribution_continuous_uniform(min, max) %}
     (random() * ({{max}}-{{min}}) + {{min}})
 {% endmacro %}
 

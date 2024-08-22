@@ -1,8 +1,4 @@
-{% macro synth_column_email_address(
-    name,
-    distribution="weighted",
-    null_frac=0
-) -%}
+{% macro synth_column_email_address(name, distribution="weighted", null_frac=0) -%}
 
     {% set email_address_expression %}
         lower( {{name}}__firstname || '.' || {{name}}__lastname || '@' || {{name}}__email_domain )

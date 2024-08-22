@@ -4,9 +4,7 @@
     {% endif %}
     
     {% set integer_field %}
-        {{ dbt_synth_data.synth_distribution_discretize_floor(
-            distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)
-        ) }}
+        {{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }}
     {% endset %}
 
     {% set base_field %}

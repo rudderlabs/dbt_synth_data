@@ -3,10 +3,8 @@
 {% endmacro %}
 
 {% macro default__synth_table(rows=1000) -%}
-    
     {# Load CTE name (to support multiple synth CTEs in one model) #}
     {% set table_name = dbt_synth_data.synth_retrieve('synth_conf')['table_name'] or "synth_table" %}
-    
     {% set ctes = dbt_synth_data.synth_retrieve('ctes') %}
     {# {{ ctes.values() | list | join(",") }} #}
     {% for name, cte in ctes.items() %}
@@ -51,7 +49,7 @@
     {{ config(post_hook=dbt_synth_data.synth_get_post_hooks())}}
 {%- endmacro %}
 
-{% macro sqlite__synth_table(rows=1000) %}
+{% macro redshift__synth_table(rows=1000) %}
     
     {# Load CTE name (to support multiple synth CTEs in one model) #}
     {% set table_name = dbt_synth_data.synth_retrieve('synth_conf')['table_name'] or "synth_table" %}
@@ -80,9 +78,15 @@
 
     {% set query %}
     create temp table {{table_name}}__base as
-        select
-            {{ adapter.dispatch('synth_table_rownum')() }} as __row_number
-        from {{ adapter.dispatch('synth_table_generator')(rows) }}
+    with recursive cte(val_num) as
+        (
+        select 1 as val_num
+        union all
+        select val_num+1 as val_num
+        from cte
+        where val_num < {{ rows }}
+        )
+    select val_num as __row_number from cte order by val_num
     ;
     {% endset %}
     {% do run_query(query) %}
@@ -147,7 +151,6 @@
 {% macro snowflake__synth_table_generator(rows) %}
     table(generator( rowcount => {{rows}} ))
 {% endmacro %}
-
 
 
 {% macro default__synth_table_rownum() -%}
