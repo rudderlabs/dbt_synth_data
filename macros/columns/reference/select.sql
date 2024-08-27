@@ -100,6 +100,8 @@
         {# ) #}
     {% endset %}
     {{ dbt_synth_data.synth_store("ctes", name+"__cte", cte) }}
+    {% set cleanup_hook = "drop table if exists " ~ table_name ~ "__" ~ name ~ "__cte" %}
+    {{ synth_add_cleanup_hook(cleanup_hook) or "" }}
 
     {% set base_field %}
         {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0, max=1) }} as {{name}}__rand
@@ -245,6 +247,8 @@
         {# ) #}
     {% endset %}
     {{ dbt_synth_data.synth_store("ctes", name+"__cte", cte) }}
+    {% set cleanup_hook = "drop table if exists " ~ table_name ~ "__" ~ name ~ "__cte" %}
+    {{ synth_add_cleanup_hook(cleanup_hook) or "" }}
 
     {% set base_field %}
       {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0, max=1) }} as {{name}}__rand
