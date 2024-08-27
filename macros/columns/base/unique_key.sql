@@ -27,3 +27,7 @@
     {# SQLite doesn't support MD5() out-of-the-box, so just use the row number #}
     __row_number
 {% endmacro %}
+
+{% macro bigquery__synth_column_unique_key() -%}
+    MD5(CAST(__row_number AS STRING))
+{%- endmacro %}

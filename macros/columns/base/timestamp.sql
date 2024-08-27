@@ -14,6 +14,24 @@
     {# NOT YET IMPLEMENTED #}
 {%- endmacro %}
 
+{% macro snowflake__synth_column_timestamp_base(min, max, distribution, null_frac) %}
+    {% set date_field %}
+        dateadd(
+            milliseconds,
+            UNIFORM(
+                0,
+                datediff(milliseconds, '{{min}}'::timestamp, '{{max}}'::timestamp),
+                RANDOM( {{ dbt_synth_data.synth_get_randseed() }} )),
+            '{{min}}'::timestamp
+        )
+    {% endset %}
+    CASE
+        WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
+        THEN NULL
+        ELSE {{ date_field }}
+    END
+{% endmacro%}
+
 {% macro redshift__synth_column_timestamp_base(min, max, distribution, null_frac) %}
     {% set date_field %}
         '{{min}}'::timestamp + (DATEDIFF(milliseconds, '{{min}}'::timestamp, '{{max}}'::timestamp) * RANDOM())/1000 * interval '1 second'
@@ -25,16 +43,9 @@
     END
 {% endmacro%}
 
-{% macro snowflake__synth_column_timestamp_base(min, max, distribution, null_frac) %}
+{% macro bigquery__synth_column_timestamp_base(min, max, distribution, null_frac) %}
     {% set date_field %}
-        dateadd(
-            milliseconds,
-            UNIFORM(
-                0,
-                datediff(milliseconds, '{{min}}'::timestamp, '{{max}}'::timestamp),
-                RANDOM( {{ dbt_synth_data.synth_get_randseed() }} )),
-            '{{min}}'::timestamp
-        )
+        timestamp_add(timestamp '{{ min }}', interval cast(round(rand()*timestamp_diff(timestamp '{{ max }}', timestamp '{{ min }}', millisecond)) as int64) millisecond)
     {% endset %}
     CASE
         WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}

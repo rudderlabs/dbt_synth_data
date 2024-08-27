@@ -29,6 +29,7 @@ with
 {{ synth_column_date(name="column_date", min='1938-01-01', max='1994-12-31', null_frac=0.2) }}
 {{ synth_column_date_sequence(name="column_dateseq", start_date='2020-08-10', step=3)}}
 {{ synth_column_timestamp(name="column_timestamp", min='1938-01-01 00:00:00', max='1994-12-31 23:59:59', null_frac=0.2) }}
+{{ synth_column_email_address(name="column_email", distribution="weighted", null_frac=0.2) }}
 {{ synth_column_value(name="column_value", value='Yes') }}
 {{ synth_column_values(name="column_values",
     values=['Mathematics', 'Science', 'English Language Arts', 'Social Studies'],
@@ -45,7 +46,8 @@ with
     value_cols="word",
     distribution="weighted",
     weight_col="frequency",
-    filter="part_of_speech like '%ADJ%'"
+    filter="part_of_speech like '%ADJ%'",
+    null_frac=0.2
 ) }}
 {{ synth_column_city(name='column_city', distribution="weighted", weight_col="population", filter="timezone like 'Europe/%'") }}
 {{ synth_column_geo_region(name='column_georegion', distribution="weighted", weight_col="population", filter="country_name='United States'") }}
