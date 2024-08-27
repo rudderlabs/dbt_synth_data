@@ -4,7 +4,14 @@
     {% endif %}
     
     {% set integer_field %}
-        cast({{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }} as int64)
+        {% if target.type == "bigquery" %}
+            cast({{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }} as int64)
+        {% elif target.type == "redshift" %}
+            cast({{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }} as int)
+        {% else %}
+            {{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }}
+        {% endif %}
+
     {% endset %}
 
     {% set integer_type %}
