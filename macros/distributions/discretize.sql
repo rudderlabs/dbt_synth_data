@@ -22,7 +22,7 @@
     floor( {{distribution}} )
 {% endmacro%}
 
-    {% macro bigquery__synth_distribution_discretize_floor(distribution) %}
+{% macro bigquery__synth_distribution_discretize_floor(distribution) %}
     floor( {{distribution}} )
 {% endmacro%}
 

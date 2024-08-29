@@ -7,7 +7,7 @@
         {% if target.type == "bigquery" %}
             cast({{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }} as int64)
         {% elif target.type == "redshift" %}
-            cast({{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }} as int)
+            cast({{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }} as bigint)
         {% else %}
             {{ dbt_synth_data.synth_distribution_discretize_floor(distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max+1)) }}
         {% endif %}
