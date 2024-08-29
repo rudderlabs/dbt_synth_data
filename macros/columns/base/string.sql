@@ -75,14 +75,14 @@
                         '{{allowed_chars}}',
                         cast( {{ dbt_synth_data.synth_distribution_discretize_floor(
                             distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=0, max=allowed_chars|length)
-                        ) }} as bigint),
+                        ) }} as int),
                         1
                     )
                     {% if not loop.last %} || {% endif %}
                 {% endfor %}
             , 0, cast( {{ dbt_synth_data.synth_distribution_discretize_floor(
                 distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min_length, max=max_length+1)
-            ) }} as bigint) )
+            ) }} as int) )
         )
     {% endset %}
 
