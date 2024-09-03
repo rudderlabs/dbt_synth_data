@@ -75,20 +75,44 @@
     {% endset %}
     {% do run_query(query) %}
 
+    {% set gen_cycles = (rows/50e6) | int %}
+    {% set gen_fraction = (rows - 50e6 * gen_cycles) | int %}
+
     {% set query %}
-    create temp table {{table_name}}__base as
-    with recursive cte(val_num) as
+    create temp table {{table_name}}__base (__row_number numeric)
+    {% endset %}
+    {% do run_query(query) %}
+
+    {% for i in range(0, gen_cycles) %}
+        {% set query %}
+        insert into {{table_name}}__base
+        with recursive cte(val_num) as
         (
+            select 1 as val_num
+            union all
+            select val_num+1 as val_num
+            from cte
+            where val_num < 50e6
+        )
+        select val_num + 50e6 * {{ gen_cycles }} as __row_number from cte order by val_num
+        {% endset %}
+        {% do run_query(query) %}
+    {% endfor %}
+
+    {% set query %}
+    insert into {{table_name}}__base
+    with recursive cte(val_num) as
+    (
         select 1 as val_num
         union all
         select val_num+1 as val_num
         from cte
-        where val_num < {{ rows }}
-        )
-    select val_num as __row_number from cte order by val_num
-    ;
+        where val_num < {{ gen_fraction }}
+    )
+    select val_num + 50e6 + {{ gen_cycles }} as __row_number from cte order by val_num
     {% endset %}
     {% do run_query(query) %}
+
 
     {% set query %}
     drop table if exists {{table_name}}__join0;
@@ -263,7 +287,6 @@
 {% macro snowflake__synth_table_generator(rows) %}
     table(generator( rowcount => {{rows}} ))
 {% endmacro %}
-
 
 {% macro default__synth_table_rownum() -%}
     row_number() over (order by NULL)
