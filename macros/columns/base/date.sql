@@ -25,6 +25,10 @@
     date '{{min}}' + ROUND(RANDOM() * ({% if max|length > 0 %}date '{{max}}'{% else %}CURRENT_DATE{% endif %} - date '{{min}}'))::int
 {% endmacro %}
 
+                                                                                            {% macro postgres__synth_column_date_base(min, max, distribution) %}
+    date '{{min}}' + ROUND(RANDOM() * ({% if max|length > 0 %}date '{{max}}'{% else %}CURRENT_DATE{% endif %} - date '{{min}}'))::int
+{% endmacro %}
+
 {% macro snowflake__synth_column_date_base(min, max, distribution, null_frac) %}
     {% set date_field %}
         dateadd(day, UNIFORM(0, datediff(day, '{{min}}'::date, '{{max}}'::date), RANDOM( {{ dbt_synth_data.synth_get_randseed() }} )), '{{min}}'::date)

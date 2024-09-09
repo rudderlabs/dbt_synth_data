@@ -6,11 +6,23 @@
     {# NOT YET IMPLEMENTED #}
 {%- endmacro %}
 
+{% macro sqlite__synth_distribution_continuous_uniform(min, max) %}
+    ({{ dbt_synth_data.synth_sqlite_random() }} * ({{max}}-{{min}}) + {{min}})
+{% endmacro %}
+
+{% macro duckdb__synth_distribution_continuous_uniform(min, max) %}
+    (random() * ({{max}}-{{min}}) + {{min}})
+{% endmacro %}
+
+{% macro postgres__synth_distribution_continuous_uniform(min, max) %}
+    (random() * ({{max}}-{{min}}) + {{min}})
+{% endmacro %}
+
 {% macro snowflake__synth_distribution_continuous_uniform(min, max) %}
     UNIFORM({{min}}::float, {{max}}::float, RANDOM( {{ dbt_synth_data.synth_get_randseed() }} ))
 {% endmacro %}
 
-    {% macro redshift__synth_distribution_continuous_uniform(min, max) %}
+{% macro redshift__synth_distribution_continuous_uniform(min, max) %}
     (random() * ({{max}}-{{min}}) + {{min}})
 {% endmacro %}
 
