@@ -148,6 +148,10 @@
     table(generator( rowcount => {{rows}} ))
 {% endmacro %}
 
+{% macro databricks__synth_table_generator(rows) %}
+    (SELECT explode(sequence(1, {{ rows }})))
+{% endmacro %}
+
 {% macro default__synth_table_rownum() -%}
     row_number() over (order by NULL)
 {%- endmacro %}
@@ -156,7 +160,11 @@
     s.idx
 {% endmacro %}
 
-                   {% macro redshift__synth_table(rows=1000) %}
+{% macro databricks__synth_table_rownum() -%}
+    uuid()
+{%- endmacro %}
+
+{% macro redshift__synth_table(rows=1000) %}
     {# Load CTE name (to support multiple synth CTEs in one model) #}
     {% set table_name = dbt_synth_data.synth_retrieve('synth_conf')['table_name'] or "synth_table" %}
 
