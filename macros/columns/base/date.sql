@@ -61,3 +61,14 @@
         ELSE {{ date_field }}
     END
 {% endmacro %}
+
+{% macro databricks__synth_column_date_base(min, max, distribution, null_frac) %}
+    {% set date_field %}
+        date_add(to_date('{{min}}'), CAST((rand() * (datediff(to_date('{{max}}'), to_date('{{min}}')))) AS INT))
+    {% endset %}
+    CASE
+        WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
+        THEN NULL
+        ELSE {{ date_field }}
+    END
+{% endmacro %}

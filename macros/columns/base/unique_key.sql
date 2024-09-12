@@ -49,3 +49,7 @@
         LOWER(FORMAT('%012X', CAST(FLOOR(RAND() * (POW(2, 48) - 1)) AS INT64)))
     )
 {%- endmacro %}
+
+{% macro databricks__synth_column_unique_key() -%}
+    UUID()
+{%- endmacro %}

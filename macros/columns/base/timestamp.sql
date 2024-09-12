@@ -53,3 +53,17 @@
         ELSE {{ date_field }}
     END
 {% endmacro%}
+
+{% macro databricks__synth_column_timestamp_base(min, max, distribution, null_frac) %}
+    {% set date_field %}
+        from_unixtime(
+            unix_timestamp('{{min}}') +
+            cast(rand() * (unix_timestamp('{{max}}') - unix_timestamp('{{min}}')) as bigint)
+        )
+    {% endset %}
+    CASE
+        WHEN {{ dbt_synth_data.synth_distribution_continuous_uniform(min=0.0, max=1.0) }} < {{null_frac}}
+        THEN NULL
+        ELSE {{ date_field }}
+    END
+{% endmacro %}
