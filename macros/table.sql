@@ -372,6 +372,9 @@
                 {{ joins[counter-1]['fields'] | replace("___PREVIOUS_CTE___", table_alias+"__join"+(counter-1)|string) }}
             from {{table_name}}__join{{counter-1}}
                 {{ joins[counter-1]['clause'] | replace("___PREVIOUS_CTE___", table_alias+"__join"+(counter-1)|string) }}
+
+            {% if joins[counter-1]['where']|length>0 %}where 1=1{% endif %}
+            {{ joins[counter-1]['where'] | replace("___PREVIOUS_CTE___", table_alias+"__join"+(counter-1)|string) }}
         ;
         {% endset %}
         {% do run_query(query) %}
