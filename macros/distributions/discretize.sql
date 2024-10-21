@@ -18,10 +18,21 @@
     floor( {{distribution}} )
 {% endmacro %}
 
+{% macro redshift__synth_distribution_discretize_floor(distribution) %}
+    floor( {{distribution}} )
+{% endmacro %}
+
 {% macro snowflake__synth_distribution_discretize_floor(distribution) %}
     floor( {{distribution}} )
 {% endmacro%}
 
+{% macro bigquery__synth_distribution_discretize_floor(distribution) %}
+    floor( {{distribution}} )
+{% endmacro%}
+
+{% macro databricks__synth_distribution_discretize_floor(distribution) %}
+    floor( {{distribution}} )
+{% endmacro%}
 
 
 {% macro synth_distribution_discretize_ceil(distribution) %}
@@ -44,10 +55,17 @@
     ceil( {{distribution}} )
 {% endmacro %}
 
+{% macro redshift__synth_distribution_discretize_ceil(distribution) %}
+    ceil( {{distribution}} )
+{% endmacro %}
+
 {% macro snowflake__synth_distribution_discretize_ceil(distribution) %}
     ceil( {{distribution}} )
 {% endmacro%}
 
+{% macro databricks__synth_distribution_discretize_ceil(distribution) %}
+    ceil( {{distribution}} )
+{% endmacro%}
 
 
 {% macro synth_distribution_discretize_round(distribution, precision=0) %}
@@ -74,7 +92,17 @@
     round( ( {{distribution}} )::numeric , {{precision}})
 {% endmacro%}
 
+{% macro redshift__synth_distribution_discretize_round(distribution, precision) %}
+    round( ( {{distribution}} )::numeric , {{precision}})
+{% endmacro %}
 
+{% macro bigquery__synth_distribution_discretize_round(distribution, precision) %}
+    round( {{distribution}} , {{precision}})
+{% endmacro %}
+
+{% macro databricks__synth_distribution_discretize_round(distribution, precision) %}
+    round( ( {{distribution}} ) , {{precision}})
+{% endmacro%}
 
 {% macro synth_distribution_discretize_width_bucket(distribution, from=0.0, to=1.0, strict_bounds=True, count=None, size=None, labels=None, label_precision=4, bucket_range_separator=' - ') %}
     {# SQLite doesn't support width_bucket(), unfortunately #}

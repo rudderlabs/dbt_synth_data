@@ -21,6 +21,13 @@
     )
 {% endmacro %}
 
+{% macro redshift__synth_column_geopoint_base() %}
+    ST_MAKEPOINT(
+        RANDOM()*360.0 - 180.0,
+        RANDOM()*180.0 - 90.0
+    )
+{% endmacro %}
+
 {% macro snowflake__synth_column_geopoint_base() %}
     ST_MAKEPOINT(
         UNIFORM(-180.0, 180.0, RANDOM( {{ dbt_synth_data.synth_get_randseed() }} )),

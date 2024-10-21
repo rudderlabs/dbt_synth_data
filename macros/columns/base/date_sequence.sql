@@ -38,6 +38,14 @@
     {% endif %}
 {% endmacro %}
 
+{% macro redshift__synth_column_date_sequence_base(start_date, step) %}
+    {% if start_date|length ==0 %}
+    (CURRENT_DATE + interval '{{step}} days' * (__row_number-1))::date
+    {% else %}
+    (TO_DATE('{{start_date}}', 'YYYY-MM-DD') + interval '{{step}} days' * (__row_number-1))::date
+    {% endif %}
+{% endmacro %}
+
 {% macro snowflake__synth_column_date_sequence_base(start_date, step) %}
     {% if start_date|length ==0 %}
     dateadd(day, {{step}}*(__row_number-1), current_date())

@@ -21,3 +21,15 @@
 {% macro snowflake__synth_distribution_continuous_uniform(min, max) %}
     UNIFORM({{min}}::float, {{max}}::float, RANDOM( {{ dbt_synth_data.synth_get_randseed() }} ))
 {% endmacro %}
+
+{% macro redshift__synth_distribution_continuous_uniform(min, max) %}
+    (random() * ({{max}}-{{min}}) + {{min}})
+{% endmacro %}
+
+{% macro databricks__synth_distribution_continuous_uniform(min, max) %}
+    (random() * ({{max}}-{{min}}) + {{min}})
+{% endmacro %}
+
+{% macro bigquery__synth_distribution_continuous_uniform(min, max) %}
+    (rand() * ({{max}}-{{min}}) + {{min}})
+{% endmacro %}

@@ -1,4 +1,4 @@
-{% macro synth_column_word(name, language="English", language_code="en", distribution="weighted", pos=[], filter="") -%}
+{% macro synth_column_word(name, language="English", language_code="en", distribution="weighted", pos=[], filter="", null_frac=0) -%}
     {% set all_filters %}
         {% if filter and filter|length>1 %}
         ( {{filter}} ) and 
@@ -27,7 +27,8 @@
         value_cols="word",
         distribution=distribution,
         weight_col="frequency",
-        filter=all_filters
+        filter=all_filters,
+        null_frac=null_frac
     ) }}
     {{ return("") }}
 {%- endmacro %}

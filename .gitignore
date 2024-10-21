@@ -3,6 +3,10 @@ dbt_modules/
 dbt_packages/
 logs/
 venv/
+.venv/
+.idea/
 env/
 test.env
 __pycache__
+.DS_Store
+models/

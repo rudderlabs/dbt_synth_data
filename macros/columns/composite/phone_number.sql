@@ -38,9 +38,21 @@
     ) }})::varchar, {{pad_length}}, '0' )
 {% endmacro %}
 
+{% macro redshift__synth_column_phone_number_chunk(min, max, pad_length) %}
+    LPAD( ({{ dbt_synth_data.synth_distribution_discretize_floor(
+        distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max)
+    ) }})::varchar, {{pad_length}}, '0' )
+{% endmacro %}
+
 {% macro snowflake__synth_column_phone_number_chunk(min, max, pad_length) %}
     LPAD( ({{ dbt_synth_data.synth_distribution_discretize_floor(
         distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max)
     ) }})::varchar, {{pad_length}}, '0' )
-    
+{% endmacro%}
+
+{% macro bigquery__synth_column_phone_number_chunk(min, max, pad_length) %}
+    -- step #1
+    LPAD( CAST ({{ dbt_synth_data.synth_distribution_discretize_floor(
+        distribution=dbt_synth_data.synth_distribution_continuous_uniform(min=min, max=max)
+    ) }} AS STRING), {{pad_length}}, '0' )
 {% endmacro%}
